@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 # Parameters
-imgPath = "./path"  
+imgPath = './path'
 imgRadius = 500     # Number of pixels that the image radius is resized to
 
 initPin = 0         # Initial pin to start threading from 
@@ -12,9 +12,9 @@ nLines = 500        # Maximal number of lines
 
 minLoop = 3         # Disallow loops of less than minLoop lines
 lineWidth = 3       # The number of pixels that represents the width of a thread
-lineWeight = 15     # The weight a single thread has in terms of "darkness"
+lineWeight = 15     # The weight a single thread has in terms of 'darkness'
 
-banner = """
+banner = '''
    __  __                        ________               
   / /_/ /_  ________  ____ _____/ /_  __/___  ____  ___ 
  / __/ __ \/ ___/ _ \/ __ `/ __  / / / / __ \/ __ \/ _ \\
@@ -22,7 +22,7 @@ banner = """
 \__/_/ /_/_/   \___/\__,_/\__,_/ /_/  \____/_/ /_/\___/ 
 
 Build a thread based halftone representation of an image
-"""
+'''
 
 # Invert grayscale image
 def invertImage(image):
@@ -62,13 +62,13 @@ def linePixels(pin0, pin1):
     return (x.astype(np.int)-1, y.astype(np.int)-1)
 
 
-if __name__=="__main__":
-    print banner
+if __name__=='__main__':
+    print(banner)
 
     # Load image
     image = cv2.imread(imgPath)
 
-    print "[+] loaded " + imgPath + " for threading.."
+    print('[+] loaded ' + imgPath + ' for threading..')
 
     # Crop image
     height, width = image.shape[0:2]
@@ -93,7 +93,7 @@ if __name__=="__main__":
     imgMasked = maskImage(imgInverted, imgRadius)
     cv2.imwrite('./masked.png', imgMasked)
 
-    print "[+] image preprocessed for threading.."
+    print('[+] image preprocessed for threading..')
 
     # Define pin coordinates
     coords = pinCoords(imgRadius, nPins)
@@ -159,12 +159,12 @@ if __name__=="__main__":
         oldPin = bestPin
 
         # Print progress
-        sys.stdout.write("\b\b")
-        sys.stdout.write("\r")
-        sys.stdout.write("[+] Computing line " + str(line + 1) + " of " + str(nLines) + " total")
+        sys.stdout.write('\b\b')
+        sys.stdout.write('\r')
+        sys.stdout.write('[+] Computing line ' + str(line + 1) + ' of ' + str(nLines) + ' total')
         sys.stdout.flush()
 
-    print "\n[+] Image threaded"
+    print('\n[+] Image threaded')
 
     # Wait for user and save before exit
     cv2.waitKey(0)
@@ -172,27 +172,29 @@ if __name__=="__main__":
     cv2.imwrite('./threaded.png', imgResult)
 
     svg_output = open('threaded.svg','wb')
-    header="""<?xml version="1.0" standalone="no"?>
+    header='''<?xml version="1.0" standalone="no"?>
     <svg width="%i" height="%i" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    """ % (width, height)
-    footer="</svg>"
+    ''' % (width, height)
+    footer='</svg>'
     svg_output.write(header)
     pather = lambda d : '<path d="%s" stroke="black" stroke-width="0.5" fill="none" />\n' % d
     pathstrings=[]
-    pathstrings.append("M" + "%i %i" % coords[lines[0][0]] + " ")
+    pathstrings.append('M' + '%i %i' % coords[lines[0][0]] + ' ')
     for l in lines:
         nn = coords[l[1]]
-        pathstrings.append("L" + "%i %i" % nn + " ")
-    pathstrings.append("Z")
-    d = "".join(pathstrings)
+        pathstrings.append('L' + '%i %i' % nn + ' ')
+    pathstrings.append('Z')
+    d = ''.join(pathstrings)
     svg_output.write(pather(d))
     svg_output.write(footer)
     svg_output.close()
 
     csv_output = open('threaded.csv','wb')
-    csv_output.write("x1,y1,x2,y2\n")
-    csver = lambda c1,c2 : "%i,%i" % c1 + "," + "%i,%i" % c2 + "\n"
+    csv_output.write('x1,y1,x2,y2\n')
+    csver = lambda c1,c2 : '%i,%i' % c1 + ',' + '%i,%i' % c2 + '\n'
+
     for l in lines:
         csv_output.write(csver(coords[l[0]],coords[l[1]]))
+
     csv_output.close()
 
